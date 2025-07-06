@@ -1,0 +1,427 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>COIN OF SILENCE</title>
+    <style>
+        @font-face {
+            font-family: 'NeueMontreal';
+            src: url('https://fonts.cdnfonts.com/css/neue-montreal') format('woff2');
+            font-weight: normal;
+            font-style: normal;
+            font-display: swap;
+        }
+        
+        :root {
+            --glow: rgba(255, 255, 255, 0.05);
+            --text-glow: rgba(255, 255, 255, 0.8);
+            --bg: #000000;
+        }
+        
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+            -webkit-tap-highlight-color: transparent;
+        }
+        
+        html, body {
+            width: 100%;
+            height: 100%;
+            overflow: hidden;
+            background: var(--bg);
+            color: white;
+            font-family: 'NeueMontreal', -apple-system, BlinkMacSystemFont, sans-serif;
+            cursor: none;
+            user-select: none;
+            -webkit-user-select: none;
+        }
+        
+        #cursor-aura {
+            position: fixed;
+            width: 120px;
+            height: 120px;
+            border-radius: 50%;
+            background: radial-gradient(circle, var(--glow) 0%, transparent 70%);
+            pointer-events: none;
+            transform: translate(-50%, -50%);
+            z-index: 9999;
+            mix-blend-mode: screen;
+            opacity: 0;
+            transition: opacity 0.3s ease;
+        }
+        
+        body:hover #cursor-aura {
+            opacity: 1;
+        }
+        
+        .container {
+            width: 100%;
+            height: 100vh;
+            display: flex;
+            flex-direction: column;
+            justify-content: space-between;
+            padding: 2rem;
+            opacity: 0;
+            transition: opacity 3s ease;
+        }
+        
+        body.loaded .container {
+            opacity: 1;
+        }
+        
+        .header, .footer {
+            text-transform: uppercase;
+            letter-spacing: 0.5em;
+            font-size: 0.7rem;
+            color: var(--text-glow);
+            text-align: center;
+            margin-left: 0.5em;
+        }
+        
+        .main {
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+            flex-grow: 1;
+        }
+        
+        .logo {
+            width: 120px;
+            height: 120px;
+            margin-bottom: 3rem;
+            position: relative;
+            transition: transform 0.5s ease;
+            filter: drop-shadow(0 0 5px rgba(255, 255, 255, 0.1));
+        }
+        
+        .logo::before {
+            content: '';
+            position: absolute;
+            top: -10px;
+            left: -10px;
+            right: -10px;
+            bottom: -10px;
+            border-radius: 50%;
+            border: 1px solid var(--glow);
+            animation: pulse 8s infinite ease-in-out;
+            opacity: 0;
+        }
+        
+        @keyframes pulse {
+            0%, 100% { transform: scale(1); opacity: 0; }
+            50% { transform: scale(1.05); opacity: 0.3; }
+        }
+        
+        .title {
+            font-size: 1.2rem;
+            letter-spacing: 0.3em;
+            margin-left: 0.3em;
+            text-align: center;
+            margin-bottom: 1.5rem;
+            text-transform: uppercase;
+            font-weight: normal;
+            color: var(--text-glow);
+            opacity: 0;
+            transform: translateY(20px);
+            transition: all 0.5s ease 0.5s;
+        }
+        
+        .subtitle {
+            font-size: 0.7rem;
+            letter-spacing: 0.5em;
+            margin-left: 0.5em;
+            text-align: center;
+            text-transform: uppercase;
+            max-width: 400px;
+            line-height: 1.6;
+            color: var(--text-glow);
+            opacity: 0;
+            transform: translateY(20px);
+            transition: all 0.5s ease 1s;
+        }
+        
+        .hover-area {
+            position: absolute;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+        }
+        
+        .hover-area:hover .title,
+        .hover-area:hover .subtitle {
+            opacity: 1;
+            transform: translateY(0);
+        }
+        
+        .hover-area:hover .logo {
+            transform: rotateY(180deg);
+        }
+        
+        .hover-area:hover .logo::before {
+            opacity: 0.3;
+        }
+        
+        .links {
+            position: fixed;
+            bottom: 2rem;
+            right: 2rem;
+            display: flex;
+            flex-direction: column;
+            gap: 1rem;
+            opacity: 0;
+            transition: opacity 0.5s ease;
+        }
+        
+        .links a {
+            color: var(--text-glow);
+            text-decoration: none;
+            font-size: 0.7rem;
+            letter-spacing: 0.3em;
+            text-transform: uppercase;
+            margin-left: 0.3em;
+            position: relative;
+            padding-bottom: 0.2rem;
+            opacity: 0.5;
+            transition: opacity 0.3s ease;
+        }
+        
+        .links a:hover {
+            opacity: 1;
+        }
+        
+        .links a::after {
+            content: '';
+            position: absolute;
+            bottom: 0;
+            left: 0;
+            width: 0;
+            height: 1px;
+            background: var(--text-glow);
+            transition: width 0.3s ease;
+        }
+        
+        .links a:hover::after {
+            width: 100%;
+        }
+        
+        body:hover .links {
+            opacity: 1;
+        }
+        
+        #connect-wallet {
+            position: fixed;
+            top: 2rem;
+            right: 2rem;
+            background: transparent;
+            border: 1px solid var(--glow);
+            color: var(--text-glow);
+            padding: 0.5rem 1rem;
+            font-family: inherit;
+            font-size: 0.7rem;
+            letter-spacing: 0.2em;
+            text-transform: uppercase;
+            cursor: pointer;
+            opacity: 0.5;
+            transition: all 0.3s ease;
+        }
+        
+        #connect-wallet:hover {
+            opacity: 1;
+            background: rgba(255, 255, 255, 0.05);
+        }
+        
+        #wallet-address {
+            position: fixed;
+            top: 2rem;
+            right: 2rem;
+            font-size: 0.7rem;
+            letter-spacing: 0.1em;
+            color: var(--text-glow);
+            opacity: 0.7;
+            max-width: 120px;
+            overflow: hidden;
+            text-overflow: ellipsis;
+            white-space: nowrap;
+            display: none;
+        }
+        
+        .twitter-link {
+            position: fixed;
+            bottom: 2rem;
+            left: 2rem;
+            color: var(--text-glow);
+            text-decoration: none;
+            font-size: 0.7rem;
+            letter-spacing: 0.3em;
+            text-transform: uppercase;
+            margin-left: 0.3em;
+            opacity: 0.5;
+            transition: opacity 0.3s ease;
+        }
+        
+        .twitter-link:hover {
+            opacity: 1;
+        }
+        
+        @media (max-width: 768px) {
+            .header, .footer {
+                letter-spacing: 0.3em;
+                font-size: 0.6rem;
+            }
+            
+            .title {
+                font-size: 1rem;
+            }
+            
+            .subtitle {
+                font-size: 0.6rem;
+                padding: 0 1rem;
+            }
+            
+            .links {
+                position: static;
+                margin-top: 2rem;
+                align-items: center;
+                opacity: 1;
+            }
+            
+            #cursor-aura {
+                display: none;
+            }
+            
+            #connect-wallet, #wallet-address {
+                position: static;
+                margin: 1rem auto;
+                display: block;
+                text-align: center;
+            }
+            
+            .twitter-link {
+                position: static;
+                margin: 1rem auto;
+                text-align: center;
+                display: block;
+            }
+        }
+    </style>
+</head>
+<body>
+    <div id="cursor-aura"></div>
+    
+    <button id="connect-wallet">Connect</button>
+    <div id="wallet-address"></div>
+    
+    <div class="container">
+        <div class="header">Coin of Silence</div>
+        
+        <div class="main">
+            <div class="hover-area">
+                <img src="A coin in a pdf (2).png" alt="Coin of Silence" class="logo">
+                <h1 class="title">Silence Is The Message</h1>
+                <p class="subtitle">No roadmap. No hype. No team. Only quiet. A symbolic token where holders observe, never speak. The rebellion against noise.</p>
+            </div>
+        </div>
+        
+        <div class="footer">The Cult of Silence</div>
+    </div>
+    
+    <a href="https://twitter.com/coinofsilence" class="twitter-link" target="_blank">Follow (silently)</a>
+    
+    <div class="links">
+        <a href="#" id="contract-link">@coinofsilence_...</a>
+        <a href="#" id="telegram-link">Gather (read only)</a>
+        <a href="#" id="dex-link">Acquire (quietly)</a>
+    </div>
+    
+    <script>
+        document.addEventListener('DOMContentLoaded', () => {
+            setTimeout(() => {
+                document.body.classList.add('loaded');
+            }, 500);
+            
+            // Cursor aura effect
+            const cursorAura = document.getElementById('cursor-aura');
+            document.addEventListener('mousemove', (e) => {
+                cursorAura.style.left = `${e.clientX}px`;
+                cursorAura.style.top = `${e.clientY}px`;
+            });
+            
+            // Prevent any links from actually navigating
+            document.querySelectorAll('a').forEach(link => {
+                link.addEventListener('click', (e) => {
+                    if (!link.classList.contains('twitter-link')) {
+                        e.preventDefault();
+                        // Simulate a silent acknowledgement
+                        const originalText = link.textContent;
+                        link.textContent = '...';
+                        setTimeout(() => {
+                            link.textContent = originalText;
+                        }, 1000);
+                    }
+                });
+            });
+            
+            // Phantom Wallet Connection
+            const connectButton = document.getElementById('connect-wallet');
+            const walletAddress = document.getElementById('wallet-address');
+            
+            async function connectWallet() {
+                try {
+                    if (window.solana && window.solana.isPhantom) {
+                        const response = await window.solana.connect();
+                        const address = response.publicKey.toString();
+                        const shortAddress = `${address.slice(0, 4)}...${address.slice(-4)}`;
+                        
+                        walletAddress.textContent = shortAddress;
+                        walletAddress.style.display = 'block';
+                        connectButton.style.display = 'none';
+                        
+                        // Silent confirmation
+                        const originalText = walletAddress.textContent;
+                        walletAddress.textContent = 'Connected';
+                        setTimeout(() => {
+                            walletAddress.textContent = originalText;
+                        }, 1500);
+                    } else {
+                        window.open('https://phantom.app/', '_blank');
+                    }
+                } catch (error) {
+                    walletAddress.textContent = 'Connection refused';
+                    walletAddress.style.display = 'block';
+                    setTimeout(() => {
+                        walletAddress.style.display = 'none';
+                        connectButton.style.display = 'block';
+                    }, 2000);
+                }
+            }
+            
+            connectButton.addEventListener('click', connectWallet);
+            
+            // Check if already connected
+            if (window.solana && window.solana.isConnected) {
+                const address = window.solana.publicKey.toString();
+                const shortAddress = `${address.slice(0, 4)}...${address.slice(-4)}`;
+                walletAddress.textContent = shortAddress;
+                walletAddress.style.display = 'block';
+                connectButton.style.display = 'none';
+            }
+            
+            // Mobile fallback
+            if (window.innerWidth <= 768) {
+                document.querySelector('.title').style.opacity = '1';
+                document.querySelector('.title').style.transform = 'translateY(0)';
+                document.querySelector('.subtitle').style.opacity = '1';
+                document.querySelector('.subtitle').style.transform = 'translateY(0)';
+            }
+        });
+    </script>
+</body>
+</html>
